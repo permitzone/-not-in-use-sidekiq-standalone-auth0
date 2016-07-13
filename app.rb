@@ -1,6 +1,5 @@
-require 'sinatra'
-require 'omniauth'
-require 'omniauth-auth0'
+require 'bundler'
+Bundler.require
 require 'sidekiq/web'
 
 module Sidekiq
