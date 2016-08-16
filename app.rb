@@ -15,7 +15,11 @@ module Sidekiq
     end
 
     get '/auth/:name/callback' do
-      session[:auth] = request.env['omniauth.auth']
+      auth_hash = request.env['omniauth.auth'].to_hash
+      auth_hash.delete('identities')
+      auth_hash['staff'] = auth_hash.dig('extra', 'raw_info', 'app_metadata', 'staff') == true
+      auth_hash.delete('extra')
+      session[:auth] = auth_hash
       redirect to('/'), 302
     end
 
@@ -31,7 +35,7 @@ module Sidekiq
         redirect to('/auth/auth0'), 302
       end
 
-      unless session[:auth].dig('extra', 'raw_info', 'app_metadata', 'staff') == true
+      unless session[:auth]['staff']
         halt 401, 'Not Authorized'
       end
     end
